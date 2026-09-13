@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Cold War, 1945–1991</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+:root{
+  --bg: #14181d;
+  --bg-raise: #1c2229;
+  --paper: #cdc6ae;
+  --ink: #e9e6de;
+  --ink-dim: #8d95a0;
+  --line: #2c333c;
+  --west: #4d7f9c;
+  --east: #ab463a;
+  --global: #b3903f;
+  --nonaligned: #5f8c5a;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'IBM Plex Sans', sans-serif;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background-image:repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px);
+  z-index:0;
+}
+
+header{
+  position:relative;
+  z-index:2;
+  padding:56px 24px 30px;
+  max-width:920px;
+  margin:0 auto;
+  border-bottom:1px solid var(--line);
+}
+h1{
+  font-family:'Spectral', serif;
+  font-weight:600;
+  font-size:clamp(2.2rem, 6vw, 3.4rem);
+  margin:0 0 6px;
+  letter-spacing:-0.01em;
+}
+.subtitle{
+  font-family:'IBM Plex Mono', monospace;
+  color:var(--paper);
+  font-size:0.92rem;
+  letter-spacing:0.04em;
+  margin:0 0 20px;
+}
+.intro{
+  max-width:60ch;
+  color:var(--ink-dim);
+  font-size:1rem;
+  margin:0 0 26px;
+}
+.legend{
+  display:flex;
+  gap:20px;
+  flex-wrap:wrap;
+  margin-bottom:6px;
+}
+.legend-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:0.82rem;
+  color:var(--ink-dim);
+}
+.legend-dot{ width:9px;height:9px;border-radius:50%; flex-shrink:0; }
+
+nav.scrubber{
+  position:sticky;
+  top:0;
+  z-index:6;
+  background:rgba(20,24,29,0.94);
+  backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line);
+  display:flex;
+  gap:6px;
+  padding:12px 24px;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+nav.scrubber::-webkit-scrollbar{display:none;}
+.phase-pill{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:0.74rem;
+  letter-spacing:0.03em;
+  color:var(--ink-dim);
+  background:transparent;
+  border:1px solid var(--line);
+  padding:6px 12px;
+  border-radius:3px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:border-color 0.2s, color 0.2s, background 0.2s;
+}
+.phase-pill:hover{ color:var(--ink); border-color:var(--ink-dim); }
+.phase-pill.active{ color:var(--bg); background:var(--paper); border-color:var(--paper); }
+
+main{
+  position:relative;
+  z-index:2;
+  max-width:920px;
+  margin:0 auto;
+  padding:44px 24px 30px;
+}
+
+.timeline{ position:relative; padding-left:26px; }
+.timeline::before{
+  content:"";
+  position:absolute;
+  left:5px; top:6px; bottom:6px; width:1px;
+  background:var(--line);
+}
+
+.phase-divider{ position:relative; padding:34px 0 22px 30px; }
+.phase-divider:first-child{ padding-top:2px; }
+.phase-divider::before{
+  content:"";
+  position:absolute; left:-25px; top:40px;
+  width:13px; height:13px; border-radius:50%;
+  background:var(--paper);
+  box-shadow:0 0 0 4px var(--bg), 0 0 0 5px var(--line);
+}
+.phase-divider:first-child::before{ top:8px; }
+.phase-range{
+  font-family:'IBM Plex Mono', monospace;
+  font-size:0.78rem;
+  letter-spacing:0.05em;
+  color:var(--paper);
+}
+.phase-divider h2{
+  font-family:'Spectral', serif;
+  font-weight:600;
+  font-size:1.5rem;
+  margin:4px 0 6px;
+}
+.phase-divider p{
+  margin:0;
+  color:var(--ink-dim);
+  font-size:0.92rem;
+  max-width:52ch;
+}
+
+.event{
+  position:relative;
+  padding:0 0 34px 30px;
+  opacity:0;
+  transform:translateY(10px);
+  animation:rise 0.5s ease forwards;
+}
+@keyframes rise{ to{ opacity:1; transform:translateY(0);} }
+.event::before{
+  content:"";
+  position:absolute; left:-25px; top:6px;
+  width:11px; height:11px; border-radius:50%;
+  background:var(--dot, var(--global));
+  box-shadow:0 0 0 4px var(--bg), 0 0 0 5px var(--line);
+}
+
+.stamp{
+  display:inline-flex; align-items:center;
+  font-family:'IBM Plex Mono', monospace;
+  font-weight:600; font-size:0.8rem; letter-spacing:0.05em;
+  color:var(--dot, var(--global));
+  border:1px solid var(--dot, var(--global));
+  padding:3px 9px; border-radius:2px;
+  transform:rotate(-1deg);
+  margin-bottom:10px;
+}
+
+.card{
+  border:1px solid var(--line);
+  border-left:2px solid var(--dot, var(--global));
+  background:var(--bg-raise);
+  border-radius:4px;
+  padding:16px;
+  cursor:pointer;
+  transition:background 0.2s;
+}
+.card:hover{ background:#212832; }
+.card:focus-visible{ outline:2px solid var(--paper); outline-offset:2px; }
+
+.card-inner{ display:flex; gap:16px; }
+@media (max-width:620px){ .card-inner{ flex-direction:column; } }
+
+.media{ flex:0 0 132px; }
+@media (max-width:620px){ .media{ flex:0 0 auto; width:100%; } }
+
+.media-slot{
+  position:relative;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  height:110px;
+  border:1px dashed var(--line);
+  border-radius:4px;
+  cursor:pointer;
+  color:var(--ink-dim);
+  font-size:0.72rem;
+  text-align:center;
+  overflow:hidden;
+  background:rgba(255,255,255,0.02);
+  transition:border-color 0.2s, color 0.2s;
+}
+.media-slot:hover{ border-color:var(--dot, var(--global)); color:var(--ink); }
+.media-slot input{ position:absolute; inset:0; opacity:0; cursor:pointer; }
+.media-icon{ width:20px; height:20px; opacity:0.7; }
+.media-img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none; }
+.media.filled .media-img{ display:block; }
+.media.filled .media-icon, .media.filled .media-label{ display:none; }
+
+.card-body{ flex:1; min-width:0; }
+.card-body h3{
+  font-family:'Spectral', serif; font-weight:600; font-size:1.2rem;
+  margin:0 0 8px; color:var(--ink);
+}
+.card-body p.summary{ margin:0; color:var(--ink-dim); font-size:0.95rem; }
+.card-body p.detail{
+  margin:0; color:var(--ink); font-size:0.92rem;
+  max-height:0; overflow:hidden; opacity:0;
+  transition:max-height 0.35s ease, opacity 0.3s ease, margin 0.35s ease, padding 0.35s ease;
+  padding-top:0; border-top:none;
+}
+.card.open p.detail{
+  max-height:260px; opacity:1; margin-top:12px; padding-top:12px;
+  border-top:1px dashed var(--line);
+}
+.toggle-hint{
+  display:block; margin-top:9px;
+  font-family:'IBM Plex Mono', monospace; font-size:0.7rem; letter-spacing:0.03em;
+  color:var(--ink-dim);
+}
+
+footer{
+  position:relative; z-index:2;
+  max-width:920px; margin:0 auto; padding:20px 24px 70px;
+  border-top:1px solid var(--line);
+  color:var(--ink-dim); font-size:0.9rem;
+}
+footer strong{ color:var(--paper); font-weight:600; }
+
+@media (prefers-reduced-motion: reduce){
+  .event{ animation:none; opacity:1; transform:none; }
+  html{ scroll-behavior:auto; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>The Cold War</h1>
+  <p class="subtitle">YALTA TO THE COLLAPSE — 1945–1991</p>
+  <p class="intro">Sixty moments across seven phases, from the last wartime summit between the Allies to the day the Soviet flag came down for good. Each card has a slot for your own image — click it to drop one in.</p>
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:var(--west)"></span>Western bloc</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--east)"></span>Eastern bloc</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--global)"></span>Both sides / global</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--nonaligned)"></span>Non-aligned (incl. India)</div>
+  </div>
+</header>
+
+<nav class="scrubber" id="scrubber"></nav>
+
+<main>
+  <div class="timeline" id="timeline"></div>
+</main>
+
+<footer>
+  On <strong>26 December 1991</strong>, Gorbachev's resignation the day before took formal effect and the USSR ceased to exist. Fifteen new nations stood where one had — and the Cold War, which had organized world politics for almost half a century, was over.
+</footer>
+
+<script>
+const phases = [
+  {id:1, range:"1945–47", name:"Origins", idea:"USA–USSR cooperation breaks down"},
+  {id:2, range:"1947–53", name:"Early Cold War", idea:"Truman Doctrine, Marshall Plan, Berlin, NATO, Korean War"},
+  {id:3, range:"1953–62", name:"High Tensions", idea:"Stalin's death, Warsaw Pact, Hungary, Berlin Wall, Cuban Missile Crisis"},
+  {id:4, range:"1963–69", name:"Détente Begins", idea:"Hotline, Test Ban Treaty, Vietnam, SALT"},
+  {id:5, range:"1970–79", name:"Détente", idea:"SALT I, Helsinki, improved US–USSR relations"},
+  {id:6, range:"1979–85", name:"Renewed Tensions", idea:"Afghanistan, Reagan, arms race"},
+  {id:7, range:"1985–91", name:"End of the Cold War", idea:"Gorbachev → reforms → Eastern European revolutions → Berlin Wall → USSR dissolves"}
+];
+
+const events = [
+  {phase:1, label:"FEB 1945", title:"Yalta Conference", camp:"global",
+    summary:"Roosevelt, Churchill, and Stalin met in Crimea to plan the postwar order, dividing Germany into occupation zones and promising free elections across liberated Europe.",
+    detail:"Those election promises for Eastern Europe went largely unfulfilled. Yalta is usually remembered as the last real moment of wartime cooperation before the alliance began splitting into rival camps."},
+  {phase:1, label:"APR–JUN 1945", title:"Germany defeated, WWII ends in Europe", camp:"global",
+    summary:"Berlin fell to Soviet forces and Germany surrendered unconditionally, ending the war in Europe and leaving the continent occupied by the very armies that would soon become rivals.",
+    detail:"The absence of a common enemy removed the main reason the US and USSR had been cooperating at all, and disagreements over Germany's future surfaced almost immediately."},
+  {phase:1, label:"JUL–AUG 1945", title:"Potsdam Conference", camp:"global",
+    summary:"With Roosevelt dead and the European war over, Truman met Stalin (and, mid-conference, Attlee replaced Churchill) to settle Germany's fate — and disagreements over Eastern Europe were now open.",
+    detail:"Truman also quietly told Stalin about a powerful new weapon the US had just tested, a moment that would matter within weeks."},
+  {phase:1, label:"AUG 1945", title:"Hiroshima, Nagasaki & Japan's surrender", camp:"west",
+    summary:"The US dropped atomic bombs on Hiroshima and Nagasaki, and Japan surrendered soon after, ending the Second World War.",
+    detail:"The USSR had not been consulted and saw the bombings partly as a message aimed at Moscow, not just Tokyo — a demonstration of a weapon the Soviets did not yet have. It sharply accelerated their own bomb program."},
+  {phase:1, label:"OCT 1945", title:"United Nations established", camp:"global",
+    summary:"Fifty-one founding states created the UN to prevent another world war, with the US, USSR, UK, France, and China holding permanent Security Council seats.",
+    detail:"The veto power given to each permanent member meant the UN could rarely act directly against either superpower's interests — a limitation that shaped the whole Cold War."},
+  {phase:1, label:"FEB 1946", title:"Stalin's \"Election Speech\"", camp:"east",
+    summary:"Stalin gave a speech to Soviet voters describing capitalism and communism as fundamentally incompatible, a sharp ideological line drawn just months after the war ended.",
+    detail:"American officials, including diplomat George Kennan, read it as confirmation that peaceful coexistence with the USSR was not realistic, feeding directly into the containment strategy that followed."},
+  {phase:1, label:"MAR 1946", title:"Churchill's \"Iron Curtain\" speech", camp:"west",
+    summary:"In Fulton, Missouri, Winston Churchill warned that an iron curtain had descended across the continent, giving the emerging standoff its lasting name.",
+    detail:"Churchill was out of office by then, but delivering the speech with Truman seated beside him signaled where American opinion was heading."},
+  {phase:2, label:"MAR 1947", title:"Truman Doctrine", camp:"west",
+    summary:"Truman asked Congress to fund aid to Greece and Turkey, pledging that the US would support free peoples resisting outside pressure or armed minorities.",
+    detail:"This set the template for containment: rather than simply defending its own borders, the US would work to stop communism from spreading anywhere it threatened to take hold."},
+  {phase:2, label:"JUN 1947", title:"Marshall Plan announced", camp:"west",
+    summary:"Washington committed billions of dollars to rebuild Western Europe's economies, aiming to remove the poverty that made communism politically attractive.",
+    detail:"The Soviets refused to take part and pressured Eastern Bloc states to reject the aid too, hardening the economic line splitting the continent in two."},
+  {phase:2, label:"SEP 1947", title:"Cominform established", camp:"east",
+    summary:"The USSR created the Communist Information Bureau to coordinate the policies of communist parties across Europe, its answer to the Marshall Plan.",
+    detail:"Cominform signaled that Moscow intended to keep tight ideological control over the communist movement rather than allow national variations."},
+  {phase:2, label:"FEB 1948", title:"Communist takeover of Czechoslovakia", camp:"east",
+    summary:"Communists seized full control of the Czechoslovak government in a coup, ending the country's status as one of the last coalition governments in Eastern Europe.",
+    detail:"The takeover shocked Western opinion and gave real urgency to the Marshall Plan and the push toward a formal Western military alliance."},
+  {phase:2, label:"JUN 1948 – MAY 1949", title:"Berlin Blockade & Airlift", camp:"global",
+    summary:"The Soviets cut off Western road and rail access to West Berlin, and the Western allies responded by flying in supplies for nearly a year rather than abandon the city.",
+    detail:"The airlift delivered over two million tons of food, coal, and fuel before Moscow lifted the blockade in May 1949. It confirmed Berlin as the Cold War's most dangerous flashpoint."},
+  {phase:2, label:"APR 1949", title:"NATO established", camp:"west",
+    summary:"The US, Canada, and ten Western European states formed a military alliance built on the principle that an attack on one member was an attack on all.",
+    detail:"NATO gave containment a permanent military structure, tying American forces to the defense of Western Europe for the rest of the century."},
+  {phase:2, label:"AUG 1949", title:"USSR tests its first atomic bomb", camp:"east",
+    summary:"The Soviet Union detonated a nuclear device years ahead of Western intelligence estimates, ending the American nuclear monopoly.",
+    detail:"The test triggered real alarm in Washington and pushed both sides toward developing the far more powerful hydrogen bomb."},
+  {phase:2, label:"OCT 1949", title:"People's Republic of China established", camp:"east",
+    summary:"Mao Zedong's forces defeated the Nationalist government, and the People's Republic of China was declared, adding the world's most populous country to the communist bloc.",
+    detail:"The Sino-Soviet alliance would later fracture, but at the time it looked like communism was expanding at a scale the West had not planned for."},
+  {phase:2, label:"1950–53", title:"Korean War", camp:"global",
+    summary:"North Korea invaded the South; a US-led UN coalition intervened, China entered on the North's side, and the war ended in 1953 with an armistice and the peninsula still divided.",
+    detail:"It was the first time containment was tested with open combat, fixing the pattern of Cold War conflict fought through proxies rather than direct superpower confrontation."},
+  {phase:2, label:"MAR 1953", title:"Stalin dies", camp:"east",
+    summary:"Joseph Stalin died after nearly three decades in power, opening a leadership struggle that Nikita Khrushchev would eventually win.",
+    detail:"His death closed the founding, most repressive era of Soviet Cold War policy and opened the door to the cautious reforms that followed."},
+  {phase:3, label:"MAY 1955", title:"Warsaw Pact established", camp:"east",
+    summary:"The USSR and its Eastern European allies formed a mutual-defense pact, giving the Eastern Bloc a military counterpart to NATO.",
+    detail:"It formalized Soviet military authority over the region and would later be invoked to justify interventions in Hungary and Czechoslovakia."},
+  {phase:3, label:"JUL 1955", title:"Geneva Summit", camp:"global",
+    summary:"Eisenhower and Khrushchev's predecessor-era Soviet leadership met in Geneva in the first postwar summit between the two sides, aiming to ease tension.",
+    detail:"Little was formally agreed, but the meeting's cordial tone gave rise to talk of a \"Geneva Spirit\" — short-lived, but a sign both sides wanted to avoid direct war."},
+  {phase:3, label:"FEB 1956", title:"Khrushchev's Secret Speech", camp:"east",
+    summary:"At a closed Communist Party congress, Khrushchev denounced Stalin's purges and cult of personality, stunning the communist world.",
+    detail:"The speech briefly raised hopes of real reform across the Eastern Bloc, hopes that would be tested — and crushed — within the year in Hungary."},
+  {phase:3, label:"OCT–NOV 1956", title:"Hungarian Uprising crushed", camp:"east",
+    summary:"A popular uprising in Budapest briefly toppled the Soviet-backed government before Soviet tanks moved in and crushed it within weeks.",
+    detail:"The West offered only rhetorical support, making clear that containment meant holding the existing line, not rolling back Soviet control where it already existed."},
+  {phase:3, label:"OCT 1957", title:"Sputnik 1 launched", camp:"east",
+    summary:"The USSR put the first artificial satellite into orbit, catching the US off guard and opening the space race.",
+    detail:"Sputnik triggered a crisis of confidence in American science and education and led directly to the creation of NASA the following year."},
+  {phase:3, label:"NOV 1958", title:"Khrushchev's Berlin Ultimatum", camp:"east",
+    summary:"Khrushchev demanded that Western troops leave West Berlin within six months, threatening to hand control of access routes to East Germany.",
+    detail:"The ultimatum passed without being enforced, but it kept Berlin as the Cold War's most volatile pressure point right up to the Wall's construction."},
+  {phase:3, label:"JAN 1959", title:"Cuban Revolution", camp:"east",
+    summary:"Fidel Castro's guerrilla movement overthrew the Cuban government, and Castro soon aligned the island with the Soviet Union, ninety miles from Florida.",
+    detail:"Cuba became the USSR's closest foothold in the Western Hemisphere and, three years later, the staging ground for the closest the world came to nuclear war."},
+  {phase:3, label:"SEP 1959", title:"Khrushchev visits the USA", camp:"global",
+    summary:"Khrushchev toured the US, meeting Eisenhower at Camp David in a rare moment of personal diplomacy between the two leaders.",
+    detail:"The visit raised hopes for further easing of tensions, hopes that collapsed the following spring when a US spy plane was shot down over Soviet territory."},
+  {phase:3, label:"MAY 1960", title:"U-2 incident", camp:"global",
+    summary:"The USSR shot down an American U-2 spy plane deep inside its territory and captured the pilot alive, exposing the US surveillance program.",
+    detail:"Eisenhower's administration was caught lying about the flight's purpose, and the incident torpedoed a planned Paris summit and the brief goodwill from Khrushchev's US visit."},
+  {phase:3, label:"APR 1961", title:"Bay of Pigs Invasion fails", camp:"west",
+    summary:"A CIA-backed force of Cuban exiles landed in Cuba to overthrow Castro and was defeated within days, embarrassing the newly inaugurated Kennedy administration.",
+    detail:"The failed invasion pushed Castro further toward Moscow and directly set the stage for the Soviet decision to place missiles on the island the following year."},
+  {phase:3, label:"AUG 1961", title:"Berlin Wall built", camp:"east",
+    summary:"East Germany sealed the border between East and West Berlin overnight, stopping the flow of citizens fleeing to the West through the city.",
+    detail:"The wall stood for twenty-eight years and became the single most enduring physical symbol of the divide between the two blocs."},
+  {phase:3, label:"SEP 1961", title:"Non-Aligned Movement founded", camp:"nonaligned",
+    summary:"Meeting in Belgrade, India, Yugoslavia, Egypt, Indonesia, and Ghana formally launched the Non-Aligned Movement, refusing to align formally with either bloc.",
+    detail:"India's Jawaharlal Nehru was one of its central founding voices, arguing newly independent nations should chart their own course rather than become Cold War proxies — a stance India largely held even while leaning toward the USSR diplomatically."},
+  {phase:3, label:"OCT 1962", title:"Cuban Missile Crisis", camp:"global",
+    summary:"The US discovered Soviet nuclear missiles being installed in Cuba — a response, in part, to the Bay of Pigs invasion the year before — and imposed a naval blockade, bringing the two superpowers to the brink of nuclear war.",
+    detail:"After thirteen tense days, Khrushchev agreed to remove the missiles in exchange for a secret US pledge to remove missiles from Turkey. It was the closest the Cold War came to going nuclear."},
+  {phase:4, label:"JUN 1963", title:"Moscow–Washington Hotline established", camp:"global",
+    summary:"In the aftermath of the missile crisis, the US and USSR set up a direct communications line so leaders could talk during a future crisis without delay.",
+    detail:"It was a small, practical fix for a real problem the crisis had exposed: how slow and dangerous diplomatic cables had been during the tensest days of October 1962."},
+  {phase:4, label:"AUG 1963", title:"Partial Nuclear Test Ban Treaty", camp:"global",
+    summary:"The US, USSR, and UK agreed to stop testing nuclear weapons in the atmosphere, underwater, and in space, though underground testing continued.",
+    detail:"It was the first arms-control agreement of the nuclear age and a direct product of the fear the missile crisis had generated."},
+  {phase:4, label:"OCT 1964", title:"Khrushchev removed; Brezhnev takes over", camp:"east",
+    summary:"Soviet Communist Party colleagues ousted Khrushchev in a bloodless internal coup, replacing him with Leonid Brezhnev.",
+    detail:"Brezhnev's nearly two-decade rule would bring both détente with the West and, later, the stagnation that set the stage for Gorbachev's reforms."},
+  {phase:4, label:"1965–1975", title:"Vietnam War", camp:"global",
+    summary:"The US sharply escalated its military involvement in Vietnam from 1965 to prevent a communist takeover of the South, while the USSR and China supplied the North.",
+    detail:"The war dragged on for a decade, ending with the 1973 Paris Peace Accords and US withdrawal, then the fall of Saigon in April 1975 and the country's reunification under communist rule — the costliest proxy conflict of the era for the US."},
+  {phase:4, label:"1968", title:"Prague Spring crushed", camp:"east",
+    summary:"Czechoslovak reformers under Alexander Dubček tried to build \"socialism with a human face,\" and in August, Warsaw Pact tanks rolled in to end the experiment.",
+    detail:"The Brezhnev Doctrine that followed declared the USSR's right to intervene in any socialist state where communist rule appeared under threat."},
+  {phase:4, label:"MAY 1969", title:"SALT I negotiations begin", camp:"global",
+    summary:"The US and USSR opened the Strategic Arms Limitation Talks, the first serious attempt to cap the size of both sides' nuclear arsenals.",
+    detail:"The talks would take three years to produce a signed treaty, but their start marked the real beginning of what became known as détente."},
+  {phase:4, label:"JUL 1969", title:"Apollo 11 Moon landing", camp:"west",
+    summary:"The US landed astronauts on the Moon, decisively answering the challenge Sputnik had posed twelve years earlier.",
+    detail:"The achievement gave the space race a clear symbolic winner and marked a turning point after which both superpowers scaled back the costliest parts of the competition."},
+  {phase:5, label:"1970", title:"Nuclear Non-Proliferation Treaty in force", camp:"global",
+    summary:"The NPT entered into force, with nuclear and non-nuclear states agreeing to limit the spread of nuclear weapons technology.",
+    detail:"Both superpowers backed it as a way to keep the nuclear club small even while continuing to expand their own arsenals against each other."},
+  {phase:5, label:"DEC 1971", title:"India–Pakistan War", camp:"nonaligned",
+    summary:"War broke out between India and Pakistan over the crisis in East Pakistan, and the two superpowers took opposing sides — Washington tilting toward Pakistan, Moscow backing India.",
+    detail:"India, though a leading voice of the Non-Aligned Movement, had signed a Treaty of Friendship with the USSR just months earlier. The war ended with Bangladesh's independence and showed how even non-aligned states were pulled into superpower rivalries."},
+  {phase:5, label:"1972", title:"Détente in full swing: Nixon in China & SALT I", camp:"global",
+    summary:"Nixon's landmark visit to Communist China in February and the signing of the SALT I and ABM treaties with the USSR in May marked détente's high point.",
+    detail:"Opening relations with China, while still deep in rivalry with the USSR, gave Washington new diplomatic leverage over Moscow — and showed the communist world was no longer a single bloc."},
+  {phase:5, label:"AUG 1975", title:"Helsinki Accords", camp:"global",
+    summary:"Thirty-five nations, including the US and USSR, signed an agreement recognizing postwar European borders in exchange for Soviet commitments on human rights.",
+    detail:"Moscow treated the borders clause as the real prize, but the human-rights language gave dissident and reform movements across the Eastern Bloc a document to invoke against their own governments."},
+  {phase:5, label:"JUN 1979", title:"SALT II signed, never ratified", camp:"global",
+    summary:"Carter and Brezhnev signed a second arms-limitation treaty, but the US Senate never ratified it after the Soviet invasion of Afghanistan later that year.",
+    detail:"Both sides largely honored its limits informally anyway, but SALT II's failure in the Senate signaled that détente's era of goodwill was ending."},
+  {phase:6, label:"DEC 1979", title:"Soviet invasion of Afghanistan", camp:"east",
+    summary:"Soviet troops invaded to prop up a faltering communist government, beginning a nine-year war against US-backed mujahideen fighters.",
+    detail:"The war dragged on for the rest of the decade: the USSR began withdrawing troops in 1988 and completed the pullout in February 1989. Widely condemned internationally, it drained Soviet resources and morale and is often cited as a major contributor to the USSR's later collapse."},
+  {phase:6, label:"1980", title:"Moscow Olympics boycotted", camp:"west",
+    summary:"The US and dozens of allied countries boycotted the 1980 Moscow Olympics in protest of the Soviet invasion of Afghanistan.",
+    detail:"It was Cold War soft power in action — using cultural and sporting prestige as a diplomatic weapon — and the USSR retaliated by boycotting the 1984 Los Angeles Games."},
+  {phase:6, label:"1981", title:"Reagan becomes US President", camp:"west",
+    summary:"Ronald Reagan took office promising a much harder line against the USSR, ending détente-era caution in American rhetoric and policy.",
+    detail:"His administration combined tough language with a major military buildup, reopening an arms race that had cooled through the 1970s."},
+  {phase:6, label:"1983", title:"Strategic Defense Initiative announced", camp:"west",
+    summary:"Reagan proposed a space-based missile defense system, nicknamed \"Star Wars,\" intended to shoot down Soviet nuclear missiles before they could hit US soil.",
+    detail:"The technology was never fully realized, but the prospect of it alarmed Moscow, which could not afford to match the spending required to compete."},
+  {phase:6, label:"1983", title:"Korean Air Lines Flight 007 shot down", camp:"east",
+    summary:"A Soviet fighter jet shot down a civilian airliner that had strayed into Soviet airspace, killing all 269 people aboard.",
+    detail:"The incident caused international outrage and pushed US–Soviet tensions to their highest point since the Cuban Missile Crisis."},
+  {phase:7, label:"1985", title:"Gorbachev becomes Soviet leader", camp:"east",
+    summary:"Mikhail Gorbachev took power and introduced glasnost (openness) and perestroika (restructuring) to reform a stagnating Soviet system.",
+    detail:"The reforms were meant to save Soviet communism, not end it — but the openness they unleashed made the system's problems impossible to hide or contain."},
+  {phase:7, label:"NOV 1985", title:"Geneva Summit: Reagan meets Gorbachev", camp:"global",
+    summary:"Reagan and Gorbachev held their first face-to-face summit in Geneva, agreeing in principle to work toward reducing both countries' nuclear arsenals.",
+    detail:"The two leaders developed a personal rapport that would prove decisive for the arms-control breakthroughs of the following years."},
+  {phase:7, label:"APR 1986", title:"Chernobyl disaster", camp:"east",
+    summary:"A reactor at the Chernobyl nuclear plant in Soviet Ukraine exploded, and the government's slow, secretive initial response undercut glasnost's promise of openness almost immediately.",
+    detail:"The disaster's cost and the mishandling of its aftermath eroded public trust in the Soviet system at exactly the moment Gorbachev needed it most."},
+  {phase:7, label:"1987", title:"INF Treaty signed", camp:"global",
+    summary:"Reagan and Gorbachev signed the Intermediate-Range Nuclear Forces Treaty, eliminating an entire class of nuclear missiles for the first time.",
+    detail:"It reflected the genuine rapport built since Geneva and signaled that the arms race, which had defined so much of the conflict, was winding down."},
+  {phase:7, label:"1989", title:"Eastern Europe breaks free: Poland & Hungary", camp:"east",
+    summary:"Poland held partially free elections in June that badly weakened communist rule, and in October Hungary opened its border with Austria, letting East Germans slip through to the West.",
+    detail:"These two moves, within months of each other, were the first real cracks in Soviet control over Eastern Europe, and other communist governments in the region began falling in quick succession."},
+  {phase:7, label:"9 NOV 1989", title:"Berlin Wall falls", camp:"global",
+    summary:"East Germans breached the wall after an official announcement was misread as an immediate opening of the border, and crowds tore it down within days.",
+    detail:"It became the single most iconic image of the Cold War's end, capping a year of largely peaceful revolutions across the Eastern Bloc."},
+  {phase:7, label:"DEC 1989", title:"Malta Summit", camp:"global",
+    summary:"George H. W. Bush and Gorbachev met aboard ship off Malta and jointly declared the start of a new era in US–Soviet relations.",
+    detail:"Many historians treat Malta, rather than any single earlier event, as the moment the two leaders themselves considered the Cold War effectively over."},
+  {phase:7, label:"OCT 1990", title:"German reunification", camp:"global",
+    summary:"East and West Germany formally reunified as one country, less than a year after the Wall fell.",
+    detail:"By the end of 1990, communist governments across Eastern Europe had collapsed one after another, largely without Soviet intervention — a sharp contrast to Hungary in 1956 and Czechoslovakia in 1968."},
+  {phase:7, label:"JUN 1991", title:"Yeltsin becomes President of the Russian SFSR", camp:"east",
+    summary:"Boris Yeltsin won Russia's first direct presidential election, giving him a democratic mandate that increasingly rivaled Gorbachev's authority as Soviet president.",
+    detail:"Yeltsin's independent power base became decisive a few months later, when he led the public resistance to the coup attempt against Gorbachev."},
+  {phase:7, label:"JUL 1991", title:"Warsaw Pact formally dissolves", camp:"east",
+    summary:"The Warsaw Pact, the Eastern Bloc's military alliance since 1955, was formally dissolved as Soviet control over the region unraveled.",
+    detail:"Its dissolution removed the last formal military structure binding the former Eastern Bloc together under Moscow's direction."},
+  {phase:7, label:"AUG 1991", title:"Failed Soviet coup against Gorbachev", camp:"east",
+    summary:"Hardline Communist Party and military officials placed Gorbachev under house arrest and attempted to seize power, but the coup collapsed within three days.",
+    detail:"Boris Yeltsin's public defiance — famously standing on a tank outside the Russian parliament — broke the coup and accelerated the republics' moves toward outright independence."},
+  {phase:7, label:"8 DEC 1991", title:"Commonwealth of Independent States established", camp:"east",
+    summary:"The leaders of Russia, Ukraine, and Belarus met in secret and signed an agreement declaring the Soviet Union effectively finished, forming the Commonwealth of Independent States in its place.",
+    detail:"The CIS was a loose association, not a new union — it existed mainly to manage the practical unwinding of a shared currency, military, and borders as the republics went their separate ways. Eight more former Soviet republics joined within weeks."},
+  {phase:7, label:"25–26 DEC 1991", title:"Gorbachev resigns; USSR formally dissolves", camp:"east",
+    summary:"Mikhail Gorbachev resigned as President of the USSR on 25 December, and the Soviet Union formally ceased to exist the following day.",
+    detail:"Fifteen new nations emerged from the union's collapse. The Cold War, which had shaped global politics for nearly half a century, ended not in battle but in the peaceful dismantling of one of its two central powers."}
+];
+
+const timeline = document.getElementById('timeline');
+const scrubber = document.getElementById('scrubber');
+
+let lastPhase = null;
+let globalIndex = 0;
+events.forEach((e) => {
+  if(e.phase !== lastPhase){
+    const ph = phases.find(p => p.id === e.phase);
+    const div = document.createElement('div');
+    div.className = 'phase-divider';
+    div.dataset.phase = ph.id;
+    div.innerHTML = `
+      <span class="phase-range">${ph.range}</span>
+      <h2>${ph.name}</h2>
+      <p>${ph.idea}</p>
+    `;
+    timeline.appendChild(div);
+    lastPhase = e.phase;
+  }
+
+  const el = document.createElement('div');
+  el.className = 'event';
+  el.style.setProperty('--dot', `var(--${e.camp})`);
+  el.style.animationDelay = (globalIndex * 0.012) + 's';
+  const idx = globalIndex;
+  el.innerHTML = `
+    <span class="stamp">${e.label}</span>
+    <div class="card" tabindex="0" role="button" aria-expanded="false">
+      <div class="card-inner">
+        <div class="media">
+          <label class="media-slot">
+            <input type="file" accept="image/*" data-idx="${idx}">
+            <svg class="media-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 16l-5-5-4 4-3-3-6 6"/></svg>
+            <span class="media-label">Add photo</span>
+            <img class="media-img" alt="${e.title}">
+          </label>
+        </div>
+        <div class="card-body">
+          <h3>${e.title}</h3>
+          <p class="summary">${e.summary}</p>
+          <p class="detail">${e.detail}</p>
+          <span class="toggle-hint">tap for more</span>
+        </div>
+      </div>
+    </div>
+  `;
+  timeline.appendChild(el);
+
+  const card = el.querySelector('.card');
+  const hint = el.querySelector('.toggle-hint');
+  const media = el.querySelector('.media');
+  const input = el.querySelector('input[type=file]');
+  const img = el.querySelector('.media-img');
+
+  function toggle(){
+    const open = card.classList.toggle('open');
+    card.setAttribute('aria-expanded', open ? 'true' : 'false');
+    hint.textContent = open ? 'tap to collapse' : 'tap for more';
+  }
+  card.addEventListener('click', toggle);
+  card.addEventListener('keydown', ev => {
+    if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); toggle(); }
+  });
+  media.addEventListener('click', ev => ev.stopPropagation());
+  input.addEventListener('change', ev => {
+    const file = ev.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      img.src = reader.result;
+      media.classList.add('filled');
+    };
+    reader.readAsDataURL(file);
+  });
+
+  globalIndex++;
+});
+
+phases.forEach(ph => {
+  const pill = document.createElement('button');
+  pill.className = 'phase-pill';
+  pill.textContent = ph.name;
+  pill.title = `${ph.range} — ${ph.idea}`;
+  pill.addEventListener('click', () => {
+    const target = timeline.querySelector(`.phase-divider[data-phase="${ph.id}"]`);
+    if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+  scrubber.appendChild(pill);
+});
+
+const pills = [...scrubber.querySelectorAll('.phase-pill')];
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      const id = Number(entry.target.dataset.phase);
+      const ph = phases.find(p => p.id === id);
+      pills.forEach(p => p.classList.toggle('active', p.textContent === ph.name));
+    }
+  });
+}, { rootMargin: '-40% 0px -50% 0px' });
+
+document.querySelectorAll('.phase-divider').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
